@@ -1,33 +1,36 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import "./search.css";
 import { withApollo } from "react-apollo";
 import { SEARCH_USER_QUERY } from "./queries";
-import { User } from "../user/User";
+import User from "../user/User";
 
 class Search extends Component {
   state = {
     searchInput: "",
     isSearching: false,
     showLoading: false,
-    userInfo: null
+    userData: {}
   };
 
-  searchForUser = async e => {
+  searchForUser = async (e) => {
     e.preventDefault();
     this.setState({
-      userInfo: false,
-      showLoading: true
+      showLoading: true,
+      userData: {}
     });
+
     const result = await this.props.client.query({
       query: SEARCH_USER_QUERY,
       variables: { userLogin: this.state.searchInput },
       loading: true
     });
-    const user = result.data.user;
+
+    const user = this.prepareUserData(result.data.user);
+
     this.setState({
       showLoading: false,
       isSearching: true,
-      userInfo: user
+      userData: user
     });
   };
 
@@ -35,9 +38,53 @@ class Search extends Component {
     this.setState({ searchInput: e.target.value });
   };
 
+  showLoading = () => {
+    return this.state.showLoading ? (<div>Loading...</div>) : null;
+  }
+
+  prepareUserData = incomeUserObj => {
+    let userData = {};
+    const {
+          name,
+          login,
+          email,
+          url,
+          bio,
+          location,
+          company,
+          followers,
+          repositories,
+          organizations
+        } = incomeUserObj;
+
+    userData = {
+      name,
+      login,
+      email,
+      url,
+      bio,
+      location,
+      company,
+      followers: followers.totalCount,
+      repositories: repositories.totalCount,
+      organizations: organizations.totalCount
+    };
+
+    return userData;
+  }
+
+
   render() {
+    const { userData } = this.state;
+    let isUserFetched = false;
+
+    //This trick is used to check if object is populated
+    if (Object.prototype.hasOwnProperty.call(userData, "login")) {
+      isUserFetched = true;
+    }
+    
     return (
-      <>
+      <Fragment>
         <div>
           <input type="text" onChange={this.saveSearchInput} />
           <input
@@ -47,22 +94,14 @@ class Search extends Component {
           />
         </div>
         <div>
-          {this.state.showLoading ? <div>Loading...</div> : null}
-          {this.state.userInfo ? <div>Result</div> : null}
+          {this.showLoading()}
+          {
+            isUserFetched 
+            ? <User userData={userData}/> 
+            : null
+          }
         </div>
-        {/* <Query query={SEARCH_USER_QUERY} variables={{login: ''}}>
-          {({ data: { user }, loading }) => {
-            if (loading || !user) {
-                return <div>Loading ...</div>;
-            }
-
-            return (
-              <div>Success!</div>
-              // <Repositories repositories={organization.repositories} />
-            );
-          }}
-        </Query> */}
-      </>
+      </Fragment>
     );
   }
 }

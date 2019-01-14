@@ -1,12 +1,88 @@
 import React, { Component } from "react";
 import { withApollo } from "react-apollo";
+import ReposList from '../repos/ReposList';
 
 class User extends Component {
+
+  // prepareUserParameter = (paramName, paramValue) => {
+  //   let parameterTemplate = paramValue 
+  //     ? (<p className="userParam">{paramName}: {paramValue}</p>)
+  //     : null
+  //   return parameterTemplate;
+  // }
+
+  // getUserParamsAsArray = (userData) => {
+  //   let resultKeysArray = Object.keys(userData).map((objKey) => {
+  //     let paramValue = userData[objKey];
+  //     return this.showUserParameter(objKey, paramValue);
+  //   })
+  //   return resultKeysArray;
+  // }
+  state = {
+    showFetchedRepositories: false
+  };
+
+  prepareUserParameter = (paramName, paramValue) => {
+    let parameterTemplate = paramValue 
+      ? (
+          <p className="userParam" key={paramName}>
+            <span className="userParamName">{paramName}</span>: {paramValue}
+          </p>
+        )
+      : null
+    return parameterTemplate;
+  }
+
+  getUserParamsAsArray = (userData) => {
+    let resultKeysArray = Object.keys(userData).map((objKey) => {
+      let paramValue = userData[objKey];
+      return this.prepareUserParameter(objKey, paramValue);
+    })
+    return resultKeysArray;
+  }
+
+  showRepositories = () => {
+    const { login } = this.props.userData;
+    return (
+      <ReposList login = {login} />
+    );
+  }
+
+  // fetchRepositories = (path, cursor) => {
+  //   getIssuesOfRepository(path, cursor).then(queryResult =>
+  //     this.setState(resolveIssuesQuery(queryResult, cursor)),
+  //   );
+  // };
+
+  fetchRepositories = (e) => {
+    e.preventDefault();
+    const { login } = this.props.userData;
+    this.setState({ showFetchedRepositories: true });
+    return (
+      <ReposList login = {login} />
+    )
+  }
+
   render() {
-    // const {} = this.props.userInfo;
+    const { userData } = this.props;
+    const { showFetchedRepositories } = this.state; 
+    let userParams = this.getUserParamsAsArray(userData);
+    
     return (
       <div>
-        <p>test</p>
+        <div className="userInfoBlock">
+          <div>
+            { userParams.map(param => (param)) }
+          </div>
+          <div>
+            <button onClick={this.fetchRepositories}>Get user repos</button>
+            {
+              showFetchedRepositories
+              ? this.showRepositories()
+              : null
+            }
+          </div>
+        </div>
       </div>
     );
   }

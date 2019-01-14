@@ -30,3 +30,21 @@
     transform: rotate(360deg);
   }
 }
+
+.userParam {
+  text-transform: capitalize;
+  text-align: start;
+}
+
+.userParamName {
+  font-weight: 600;
+}
+
+.userInfoBlock {
+  margin-top: 20px;
+  padding: 15px;
+  width: 400px;
+  margin: 0 auto;
+  border: 2px solid lightskyblue;
+  border-radius: 5px;
+}
