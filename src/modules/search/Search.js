@@ -1,5 +1,4 @@
-import React, { Component, Fragment } from "react";
-import "./search.css";
+import React, { Component } from "react";
 import { withApollo } from "react-apollo";
 import { SEARCH_USER_QUERY } from "./queries";
 import User from "../user/User";
@@ -9,37 +8,63 @@ class Search extends Component {
     searchInput: "",
     isSearching: false,
     showLoading: false,
-    userData: {}
+    userData: {},
+    isUserFetched: false,
+    error: null
   };
 
   searchForUser = async (e) => {
     e.preventDefault();
-    this.setState({
-      showLoading: true,
-      userData: {}
-    });
+    let user;
+    let result;
 
-    const result = await this.props.client.query({
+    if (!this.state.searchInput) {
+      return;
+    }
+    this.setState((prevState) => ({
+      userData: {},
+      isUserFetched: false,
+      showLoading: true
+    }));
+
+    result = await this.props.client.query({
       query: SEARCH_USER_QUERY,
       variables: { userLogin: this.state.searchInput },
-      loading: true
+      loading: true,
+      errorPolicy: 'all'
     });
 
-    const user = this.prepareUserData(result.data.user);
+    if (result.data.user) {
+      user = this.prepareUserData(result.data.user);
 
-    this.setState({
-      showLoading: false,
-      isSearching: true,
+      //This trick is used to check if object is populated
+      if (Object.prototype.hasOwnProperty.call(user, "login")) {
+        this.setState({ isUserFetched: true });
+      }
+    } else if (result.error) {
+      this.setState((prevState) => ({
+        showLoading: !prevState.showLoading,
+        isSearching: !prevState.isSearching,
+        error: result.error[0].message
+      }));
+      return;
+    }
+
+    this.setState((prevState) => ({
+      showLoading: !prevState.showLoading,
+      isSearching: !prevState.isSearching,
       userData: user
-    });
+    }));
   };
 
   saveSearchInput = e => {
-    this.setState({ searchInput: e.target.value });
+    if (e.target.value) {
+      this.setState({ searchInput: e.target.value });
+    }
   };
 
   showLoading = () => {
-    return this.state.showLoading ? (<div>Loading...</div>) : null;
+    return this.state.showLoading ? (<div className="loading">Loading...</div>) : null;
   }
 
   prepareUserData = incomeUserObj => {
@@ -73,35 +98,40 @@ class Search extends Component {
     return userData;
   }
 
+  onEnterPress = (e) => {
+    if(e.keyCode === 13){
+      this.searchForUser(e);
+    }
+  }
+
 
   render() {
-    const { userData } = this.state;
-    let isUserFetched = false;
-
-    //This trick is used to check if object is populated
-    if (Object.prototype.hasOwnProperty.call(userData, "login")) {
-      isUserFetched = true;
-    }
+    const { 
+      userData,
+      isUserFetched,
+      error
+    } = this.state;
     
     return (
-      <Fragment>
+      <div className="searchWrapper">
         <div>
-          <input type="text" onChange={this.saveSearchInput} />
-          <input
-            type="submit"
-            value="Search for user"
-            onClick={this.searchForUser}
+          <input className="searchInput"
+                 type="text"
+                 onChange={this.saveSearchInput}
+                 onKeyDown={this.onEnterPress}
           />
+          <button className="searchButton"
+                  onClick={this.searchForUser}>Search for user</button>
         </div>
         <div>
           {this.showLoading()}
           {
-            isUserFetched 
-            ? <User userData={userData}/> 
-            : null
+            isUserFetched && !error 
+              ? (<User userData={userData} />)
+              : (<div className="errorMessage">{error}</div>)
           }
         </div>
-      </Fragment>
+      </div>
     );
   }
 }

@@ -2,10 +2,12 @@
   "name": "show-me-your-github",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://ye-s.github.io/show-me-your-github",
   "dependencies": {
     "apollo-cache-inmemory": "^1.3.12",
     "apollo-client": "^2.4.8",
     "apollo-link": "^1.2.6",
+    "apollo-link-error": "^1.1.5",
     "apollo-link-http": "^1.5.9",
     "graphql": "^14.0.2",
     "graphql-tag": "^2.10.0",
@@ -20,7 +22,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -30,5 +34,8 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "gh-pages": "^2.0.1"
+  }
 }

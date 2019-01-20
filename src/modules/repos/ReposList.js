@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { ApolloConsumer } from 'react-apollo';
+import Repo from './Repo';
 import { USER_REPOSITORIES_QUERY } from "../user/queries";
 import { Query } from 'react-apollo';
 
-const ReposWrapper = () => (<div></div>);
-// const ReposList = ({ login }) => (
 class ReposList extends Component {
   
   state = {
@@ -26,40 +24,30 @@ class ReposList extends Component {
         {({ data, loading, error, fetchMore }) => {
           if (error) {
             console.log(error);
-            // return <div>{error}</div>;
           }
           const { repositoryOwner } = data;
 
           if (loading && !repositoryOwner) {
-            return (<div>Loading...</div>);
+            return (<div className="loading">Loading...</div>);
           }
           const { repositories } = repositoryOwner;
-          const { endCursor } =  repositories.pageInfo;
 
           const reposList = repositories.edges.map((repo, index) => {
-            const { name, primaryLanguage, description } = repo.node;
-            console.log(repo.node);
-            console.log('dddd');
-            const languageName = primaryLanguage ? primaryLanguage.name : null;
+            const { name, primaryLanguage, description, createdAt } = repo.node;
+            const language = primaryLanguage ? primaryLanguage.name : null;
+            const dateCreated = createdAt.slice(0, 10);
             return (
-                <div key={ index.toString() + repo.name }>
-                  <p><span>{name}</span>{languageName ? `, main language - ${languageName}` : ''}</p> 
-                  <p>{description}</p>
-                  <p></p>
-                </div>
+                <Repo repoName={name}
+                      language={language}
+                      dateCreated={dateCreated}
+                      description={description}
+                />
             )
           });
 
-          const showMoreRepos = ''
           return (
             <div>
               { reposList }
-              {/* <ReposList
-              // loading={loading}
-              repositories={repositories}
-              fetchMore={fetchMore}
-              entry={'organization'}
-            /> */}
 
             <div>
               { 

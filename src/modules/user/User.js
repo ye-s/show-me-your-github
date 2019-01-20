@@ -4,20 +4,6 @@ import ReposList from '../repos/ReposList';
 
 class User extends Component {
 
-  // prepareUserParameter = (paramName, paramValue) => {
-  //   let parameterTemplate = paramValue 
-  //     ? (<p className="userParam">{paramName}: {paramValue}</p>)
-  //     : null
-  //   return parameterTemplate;
-  // }
-
-  // getUserParamsAsArray = (userData) => {
-  //   let resultKeysArray = Object.keys(userData).map((objKey) => {
-  //     let paramValue = userData[objKey];
-  //     return this.showUserParameter(objKey, paramValue);
-  //   })
-  //   return resultKeysArray;
-  // }
   state = {
     showFetchedRepositories: false
   };
@@ -48,12 +34,6 @@ class User extends Component {
     );
   }
 
-  // fetchRepositories = (path, cursor) => {
-  //   getIssuesOfRepository(path, cursor).then(queryResult =>
-  //     this.setState(resolveIssuesQuery(queryResult, cursor)),
-  //   );
-  // };
-
   fetchRepositories = (e) => {
     e.preventDefault();
     const { login } = this.props.userData;
@@ -69,19 +49,17 @@ class User extends Component {
     let userParams = this.getUserParamsAsArray(userData);
     
     return (
-      <div>
-        <div className="userInfoBlock">
-          <div>
-            { userParams.map(param => (param)) }
-          </div>
-          <div>
-            <button onClick={this.fetchRepositories}>Get user repos</button>
-            {
-              showFetchedRepositories
-              ? this.showRepositories()
-              : null
-            }
-          </div>
+      <div className="userInfoBlock">
+        <div>
+          { userParams.map(param => (param)) }
+        </div>
+        <div>
+          <button onClick={this.fetchRepositories}>Get user repos</button>
+          {
+            showFetchedRepositories
+            ? this.showRepositories()
+            : null
+          }
         </div>
       </div>
     );

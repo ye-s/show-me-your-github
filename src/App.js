@@ -1,26 +1,20 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import SearchUser from './modules/search/Search';
 
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
+      <div className="appWrapper">
+        <div className="appHeader">
           {/* <img src={logo} className="App-logo" alt="logo" /> */}
           <p>
-            Edit <code>src/App.js</code> and save to reload.
+            Check public repositories of any user!
           </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+          <p>
+            Simply type user login for GitHub.
+          </p>
+        </div>
         <SearchUser />
       </div>
     );

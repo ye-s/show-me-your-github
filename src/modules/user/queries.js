@@ -28,11 +28,4 @@ export const USER_REPOSITORIES_QUERY = gql`
     }
   }
 `;
-// "assignableUsers(first: 10) {
-//   nodes {
-//       id
-//       name
-//       login
-//       company
-//   }
-// }"
+
