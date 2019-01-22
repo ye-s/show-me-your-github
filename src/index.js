@@ -7,12 +7,16 @@ import { ApolloClient } from 'apollo-client';
 import { HttpLink } from 'apollo-link-http';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 
+// decided to move consts here, it makes app launching easier
+const REACT_APP_API_BASE_URL= 'https://api.github.com/graphql';
+const REACT_APP_GITHUB_ACCESS_TOKEN= 'Your GitHub access token';
+
 const httpLink = new HttpLink({
-    uri: process.env.REACT_APP_API_BASE_URL,
+    uri: REACT_APP_API_BASE_URL,
     headers: {
         authorization: `Bearer ${
-            process.env.REACT_APP_GITHUB_ACCESS_TOKEN
-        }`,
+            REACT_APP_GITHUB_ACCESS_TOKEN
+        }`
     },
 });
 
